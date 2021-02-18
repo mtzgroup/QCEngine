@@ -1,8 +1,6 @@
 """
 Tests the DQM compute dispatch module
 """
-
-
 import numpy as np
 import pytest
 from qcelemental.models import AtomicInput
@@ -21,6 +19,7 @@ _canonical_methods = [
     ("psi4", {"method": "hf", "basis": "6-31G"}, {}),
     ("qchem", {"method": "hf", "basis": "6-31G"}, {}),
     ("rdkit", {"method": "UFF"}, {}),
+    ("terachem_pbs", {"method": "b3lyp", "basis": "6-31G"}, {}),
     ("torchani", {"method": "ANI1x"}, {}),
     ("turbomole", {"method": "pbe", "basis": "6-31G"}, {}),
     ("xtb", {"method": "GFN2-xTB"}, {}),
@@ -31,7 +30,7 @@ _canonical_methods = [
 
 
 def _get_molecule(program):
-    if program in ["openmm"]:
+    if program in ["openmm", "terachem_pbs"]:
         return qcng.get_molecule("water")
     else:
         return qcng.get_molecule("hydrogen")
@@ -46,7 +45,6 @@ def test_compute_energy(program, model, keywords):
 
     inp = AtomicInput(molecule=molecule, driver="energy", model=model, keywords=keywords)
     ret = qcng.compute(inp, program, raise_error=True)
-
     assert ret.success is True
     assert isinstance(ret.return_result, float)
 
